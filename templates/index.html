@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Dự đoán tiêu thụ điện năng</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Dự đoán lượng tiêu thụ điện năng</h1>
+        <form method="POST" class="prediction-form">
+            <div class="form-group">
+                <label for="hour">Giờ:</label>
+                <input type="number" name="hour" min="0" max="23" required
+                       value="{{ form_data.hour if form_data.hour else '' }}">
+            </div>
+            <div class="form-group">
+                <label for="day">Ngày:</label>
+                <input type="number" name="day" min="1" max="31" required
+                       value="{{ form_data.day if form_data.day else '' }}">
+            </div>
+            <div class="form-group">
+                <label for="month">Tháng:</label>
+                <input type="number" name="month" min="1" max="12" required
+                       value="{{ form_data.month if form_data.month else '' }}">
+            </div>
+            <div class="form-group">
+                <label for="year">Năm:</label>
+                <input type="number" name="year" min="2002" max="2018" required
+                       value="{{ form_data.year if form_data.year else '' }}">
+            </div>
+            <div class="form-group">
+                <label for="algorithm">Chọn giải thuật:</label>
+                <select name="algorithm" required>
+                    <option value="xgb" {% if form_data.algorithm == 'xgb' %}selected{% endif %}>XGBoost</option>
+                    <option value="lasso" {% if form_data.algorithm == 'lasso' %}selected{% endif %}>Lasso</option>
+                    <option value="both" {% if form_data.algorithm == 'both' %}selected{% endif %}>Cả hai</option>
+                </select>
+            </div>
+            <button type="submit" class="submit-btn">Dự đoán</button>
+        </form>
+
+        {% if error_msg %}
+            <div class="error">
+                <p>Lỗi: {{ error_msg }}</p>
+            </div>
+        {% endif %}
+
+        {% if prediction_xgb is not none or prediction_lasso is not none %}
+            <div class="result">
+                <h3>Kết quả dự đoán:</h3>
+                {% if prediction_xgb is not none %}
+                    <p><b>XGBoost:</b> {{ prediction_xgb | round(2) }} MW</p>
+                {% endif %}
+                {% if prediction_lasso is not none %}
+                    <p><b>Lasso:</b> {{ prediction_lasso | round(2) }} MW</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
